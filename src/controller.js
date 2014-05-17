@@ -132,7 +132,7 @@ GRA.mousemove = function(x,y){
 
 	if(GRA.mouseState == "down") {
 		GRA.gameBox.x = GRA.gameBox0.x - (x-GRA.mouseDownPos.x)*GRA.gameBox0.w;
-		GRA.gameBox.y = GRA.gameBox0.y - (y-GRA.mouseDownPos.y)*GRA.gameBox0.w;
+		GRA.gameBox.y = GRA.gameBox0.y - (y-GRA.mouseDownPos.y)*GRA.gameBox0.h;
 	}
 };
 
