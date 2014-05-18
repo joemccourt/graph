@@ -25,13 +25,76 @@ GRA.viewGraph = function() {
 	var ctx = GRA.ctx;
 	ctx.save();
 
+	ctx.lineWidth = 3;
+
 	var w = GRA.canvas.width;
 	var h = GRA.canvas.height;
 	var b = GRA.gameBox;
 
-	ctx.fillStyle = 'gray';
+	var selectedChildren = [];
+	var hoverChildren = [];
+	if(GRA.graph[GRA.selectedNode]) {
+		selectedChildren = GRA.graph[GRA.selectedNode].children;
+	}
+	if(GRA.graph[GRA.hoverNode]) {
+		hoverChildren = GRA.graph[GRA.hoverNode].children;
+	}
+
+	//Edges
 	for(var key in GRA.graph) {
 		var node = GRA.graph[key];
+
+		var x = ((node.p.x - b.x) / b.w) * w;
+		var y = ((node.p.y - b.y) / b.h) * h;
+
+		var c = node.children;
+
+		if(c.length > 0) {
+			ctx.beginPath();
+		
+			if(key === GRA.selectedNode) {
+				ctx.strokeStyle = 'rgba(200,100,0,0.8)';
+			} else if(key === GRA.hoverNode) {
+				ctx.strokeStyle = 'rgba(0,200,200,0.8)';
+			} else if(selectedChildren.indexOf(key) >= 0) {
+				ctx.strokeStyle = 'rgba(100,50,0,0.8)';
+			} else if(hoverChildren.indexOf(key) >= 0) {
+				ctx.strokeStyle = 'rgba(0,100,100,0.8)';
+			} else {
+				ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+			}
+
+			for(var k = 0; k < c.length; k++) {
+
+				var childNode = GRA.graph[c[k]];
+
+				var xC = ((childNode.p.x - b.x) / b.w) * w;
+				var yC = ((childNode.p.y - b.y) / b.h) * h;
+
+				ctx.moveTo(x,y);
+				ctx.lineTo(xC,yC);
+			}
+
+			ctx.stroke();
+			ctx.fill();
+		}
+	}
+
+
+	for(var key in GRA.graph) {
+		var node = GRA.graph[key];
+
+		if(key === GRA.selectedNode) {
+			ctx.fillStyle = 'rgba(255,0,0,0.8)';
+		} else if(key === GRA.hoverNode) {
+			ctx.fillStyle = 'rgba(0,0,255,0.8)';
+		} else if(selectedChildren.indexOf(key) >= 0) {
+			ctx.fillStyle = 'rgba(100,0,0,0.8)';
+		} else if(hoverChildren.indexOf(key) >= 0) {
+			ctx.fillStyle = 'rgba(0,0,100,0.8)';
+		} else {
+			ctx.fillStyle = 'rgba(127,127,127,0.5)';
+		}
 
 		var x = ((node.p.x - b.x) / b.w) * w;
 		var y = ((node.p.y - b.y) / b.h) * h;

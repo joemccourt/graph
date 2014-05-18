@@ -18,6 +18,9 @@ GRA.initDefaultValues = function() {
 
 	GRA.gameState = {};
 
+	GRA.selectedNode = "somerandomKey0";
+	GRA.hoverNode = "somerandomKey1";
+
 	GRA.time = 0;
 };
 
@@ -50,13 +53,13 @@ GRA.gameLoop = function(time) {
 
 	GRA.frameRenderTime = time - GRA.lastFrameTime;
 	
-	var m = 5;
-	for(var i = 0; i < m; i++) {
-		GRA.updateModel(GRA.frameRenderTime/1000/m);
-	}
+	GRA.updateModel(GRA.frameRenderTime/1000);
 
-	GRA.drawClear();
-	GRA.drawGame();
+	if(GRA.dirtyCanvas) {
+		GRA.drawClear();
+		GRA.drawGame();
+		GRA.dirtyCanvas = false;
+	}
 
 	requestAnimationFrame(GRA.gameLoop);
 };
@@ -94,18 +97,22 @@ GRA.fitGameBox = function(box,w,h) {
 
 GRA.moveLeft = function() {
 	GRA.gameBox.x -= 0.05*GRA.gameBox.w;
+	GRA.dirtyCanvas = true;
 };
 
 GRA.moveRight = function() {
 	GRA.gameBox.x += 0.05*GRA.gameBox.w;
+	GRA.dirtyCanvas = true;
 };
 
 GRA.moveUp = function() {
 	GRA.gameBox.y -= 0.05*GRA.gameBox.h;
+	GRA.dirtyCanvas = true;
 };
 
 GRA.moveDown = function() {
 	GRA.gameBox.y += 0.05*GRA.gameBox.h;
+	GRA.dirtyCanvas = true;
 };
 
 GRA.scaleGameBox = function(scaleX, scaleY) {
@@ -114,6 +121,8 @@ GRA.scaleGameBox = function(scaleX, scaleY) {
 	
 	GRA.gameBox.w *= scaleX;
 	GRA.gameBox.h *= scaleY;
+
+	GRA.dirtyCanvas = true;
 };
 
 GRA.zoomOut = function() {
@@ -131,8 +140,48 @@ GRA.mousemove = function(x,y){
 	GRA.mousePos = {'x':x,'y':y};
 
 	if(GRA.mouseState == "down") {
-		GRA.gameBox.x = GRA.gameBox0.x - (x-GRA.mouseDownPos.x)*GRA.gameBox0.w;
-		GRA.gameBox.y = GRA.gameBox0.y - (y-GRA.mouseDownPos.y)*GRA.gameBox0.h;
+
+		var node = GRA.graph[GRA.selectedNode];
+		if(node) {
+			var p = GRA.graph[GRA.selectedNode].p;
+			p.x = GRA.selectedNodeP0.x + (x - GRA.mouseDownPos.x)*GRA.gameBox.w;
+			p.y = GRA.selectedNodeP0.y + (y - GRA.mouseDownPos.y)*GRA.gameBox.h;
+		} else {
+			GRA.gameBox.x = GRA.gameBox0.x - (x-GRA.mouseDownPos.x)*GRA.gameBox0.w;
+			GRA.gameBox.y = GRA.gameBox0.y - (y-GRA.mouseDownPos.y)*GRA.gameBox0.h;
+		}
+
+		GRA.dirtyCanvas = true;
+
+	} else {
+
+		// Convert x,y to graph space
+		var b = GRA.gameBox;
+		// x = b.x + b.w * x;
+		// y = b.y + b.h * y;
+
+		var graph = GRA.graph;
+		var minDist = 0.1 * 0.1;
+		var minKey = "";
+		var aspect = b.w / b.h;
+		for(var key in graph) {
+
+			var node = graph[key];
+			var p = {x: node.p.x, y: node.p.y};
+			p.x = (p.x - b.x) / b.w;
+			p.y = (p.y - b.y) / b.h;
+
+			var dist = (p.x-x)*(p.x-x)*aspect*aspect + (p.y-y)*(p.y-y);
+			if(dist < minDist) {
+				minDist = dist;
+				minKey = key;
+			}
+		}
+
+		if(minKey !== GRA.hoverNode) {
+			GRA.hoverNode = minKey;
+			GRA.dirtyCanvas = true;
+		}
 	}
 };
 
@@ -143,6 +192,15 @@ GRA.mousedown = function(x,y) {
 	GRA.mouseMoved = false;
 
 	GRA.gameBox0 = GRA.copyBox(GRA.gameBox);
+
+	GRA.selectedNode = GRA.hoverNode;
+	var node = GRA.graph[GRA.selectedNode];
+	
+	if(node) {
+		var p = node.p;
+		GRA.selectedNodeP0 = {x: p.x, y: p.y};
+		GRA.dirtyCanvas = true;
+	}
 };
 
 GRA.mouseup = function(x,y) {
