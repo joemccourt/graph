@@ -68,11 +68,13 @@ GRA.viewGraph = function() {
 
 				var childNode = GRA.graph[c[k]];
 
-				var xC = ((childNode.p.x - b.x) / b.w) * w;
-				var yC = ((childNode.p.y - b.y) / b.h) * h;
+				if(childNode) {
+					var xC = ((childNode.p.x - b.x) / b.w) * w;
+					var yC = ((childNode.p.y - b.y) / b.h) * h;
 
-				ctx.moveTo(x,y);
-				ctx.lineTo(xC,yC);
+					ctx.moveTo(x,y);
+					ctx.lineTo(xC,yC);
+				}
 			}
 
 			ctx.stroke();
@@ -102,7 +104,7 @@ GRA.viewGraph = function() {
 		ctx.beginPath();
 		
 		ctx.beginPath();
-		ctx.arc(x,y,15, 0, 2 * Math.PI, false);
+		ctx.arc(x,y,25*node.v, 0, 2 * Math.PI, false);
 		ctx.closePath();
 
 		ctx.fill();

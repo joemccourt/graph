@@ -11,6 +11,8 @@ GRA.initDefaultValues = function() {
 	GRA.mouseDownPos = {x:-1,y:-1};
 	GRA.mouseState = "up";
 
+	GRA.lastUpdateTime = 0;
+
 	GRA.mouseMoved = false;
 	GRA.particles = {};
 
@@ -53,7 +55,10 @@ GRA.gameLoop = function(time) {
 
 	GRA.frameRenderTime = time - GRA.lastFrameTime;
 	
-	GRA.updateModel(GRA.frameRenderTime/1000);
+	if(time - GRA.lastUpdateTime > 200) {
+		GRA.updateModel();
+		GRA.lastUpdateTime = time;
+	}
 
 	if(GRA.dirtyCanvas) {
 		GRA.drawClear();

@@ -1,5 +1,49 @@
 GRA.updateModel = function(dt) {
 	
+	var node = {children: [], p: {x:0.5,y:0}, v: Math.random()};
+
+	var nodeKey = ""+Math.random();
+	GRA.graph[nodeKey] = node;
+
+	if(!GRA.rootKey) {
+		GRA.rootKey = nodeKey;
+	} else {
+		GRA.pushMaxHeap(GRA.rootKey, nodeKey, 1);
+	}
+
+	
+	GRA.dirtyCanvas = true;
+};
+
+GRA.pushMaxHeap = function(rootKey, nodeKey, level) {
+
+	var root = GRA.graph[rootKey];
+	var node = GRA.graph[nodeKey];
+
+	if(!root) {
+		return nodeKey;
+	}
+
+	var dx = 1/Math.pow(2,level);
+
+	if(node.v < root.v) {
+		if(!root.children[0]) {
+			root.children[0] = nodeKey;
+			node.p.x = root.p.x - dx;
+			node.p.y = 0.2*level;
+		} else {
+			GRA.pushMaxHeap(root.children[0], nodeKey, level+1);
+		}
+	} else {
+		if(!root.children[1]) {
+			root.children[1] = nodeKey;
+			node.p.x = root.p.x + dx;
+			node.p.y = 0.2*level;
+		} else {
+			GRA.pushMaxHeap(root.children[1], nodeKey, level+1);
+		}
+	}
+
 };
 
 GRA.genBinaryTreeHelper = function(node, level, maxLeveL) {
@@ -72,7 +116,7 @@ GRA.genRandomEdges = function(density) {
 GRA.initNewGameState = function() {
 	GRA.graph = {};
 
-	GRA.genBinaryTree(6);
+	// GRA.genBinaryTree(6);
 	// GRA.genRandomNodes(300);
 	// GRA.genRandomEdges(1.0);
 };
