@@ -1,21 +1,25 @@
 GRA.updateModel = function(dt) {
 	
-	var node = {children: [], p: {x:0.5,y:0}, v: Math.random()};
+	var node = {children: [], p: {x:0.5,y:0}, v: Math.random(), level: 0};
 
 	var nodeKey = ""+Math.random();
 	GRA.graph[nodeKey] = node;
 
 	if(!GRA.rootKey) {
 		GRA.rootKey = nodeKey;
+		GRA.numNodes = 1;
 	} else {
-		GRA.pushMaxHeap(GRA.rootKey, nodeKey, 1);
+
+		// GRA.insertBinTree(GRA.rootKey, nodeKey, 1);
+		GRA.numNodes++;
+		GRA.insertHeap(GRA.rootKey, nodeKey, 0, 0);
 	}
 
 	
 	GRA.dirtyCanvas = true;
 };
 
-GRA.pushMaxHeap = function(rootKey, nodeKey, level) {
+GRA.insertBinTree = function(rootKey, nodeKey, level) {
 
 	var root = GRA.graph[rootKey];
 	var node = GRA.graph[nodeKey];
@@ -32,7 +36,7 @@ GRA.pushMaxHeap = function(rootKey, nodeKey, level) {
 			node.p.x = root.p.x - dx;
 			node.p.y = 0.2*level;
 		} else {
-			GRA.pushMaxHeap(root.children[0], nodeKey, level+1);
+			GRA.insertBinTree(root.children[0], nodeKey, level+1);
 		}
 	} else {
 		if(!root.children[1]) {
@@ -40,11 +44,60 @@ GRA.pushMaxHeap = function(rootKey, nodeKey, level) {
 			node.p.x = root.p.x + dx;
 			node.p.y = 0.2*level;
 		} else {
-			GRA.pushMaxHeap(root.children[1], nodeKey, level+1);
+			GRA.insertBinTree(root.children[1], nodeKey, level+1);
 		}
 	}
 
 };
+
+GRA.insertHeap = function(rootKey, nodeKey, level) {
+
+	var root = GRA.graph[rootKey];
+	var node = GRA.graph[nodeKey];
+
+	var searchQueue = [rootKey];
+	var numSearched = 0;
+
+	while(searchQueue.length - numSearched > 0) {
+		var nodeSearchKey = searchQueue[numSearched];
+		var nodeSearch = GRA.graph[nodeSearchKey];
+		numSearched++;
+
+		var level = nodeSearch.level+1;
+		var dx = 1/Math.pow(2,level);
+
+		if(!nodeSearch.children[0]) {
+			node.p.x = nodeSearch.p.x - dx;
+			node.p.y = 0.2*level;
+			node.level = level;
+			nodeSearch.children[0] = nodeKey;
+			node.parent = nodeSearchKey;
+			node.isLeft = true;
+
+			return;
+		}
+
+		if(!nodeSearch.children[1]) {
+			node.p.x = nodeSearch.p.x + dx;
+			node.p.y = 0.2*level;
+			node.level = level;
+			nodeSearch.children[1] = nodeKey;
+			node.parent = nodeSearchKey;
+			node.isLeft = false;
+
+			return;
+		}
+
+		searchQueue.push(nodeSearch.children[0]);
+		searchQueue.push(nodeSearch.children[1]);
+	}
+
+	// var n = 
+	// var n = GRA.numNodes;
+
+
+};
+
 
 GRA.genBinaryTreeHelper = function(node, level, maxLeveL) {
 	if(level > maxLeveL) {return;}
