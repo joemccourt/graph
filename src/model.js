@@ -50,10 +50,87 @@ GRA.insertBinTree = function(rootKey, nodeKey, level) {
 
 };
 
+GRA.swapNodes = function(nodeKeyTop, nodeKeyBottom) {
+	var graph = GRA.graph;
+	var nodeTop = graph[nodeKeyTop];
+	var nodeBottom = graph[nodeKeyBottom];
+
+	var tmpV = nodeBottom.v;
+	nodeBottom.v = nodeTop.v;
+	nodeTop.v = tmpV;
+
+	// if(nodeTop.parent) {
+	// 	var parent = graph[nodeTop.parent];
+	// 	if(nodeTop.isLeft) {
+	// 		parent.children[0] = nodeKeyBottom;
+	// 	} else {
+	// 		parent.children[1] = nodeKeyBottom;
+	// 	}
+	// }
+
+	// var childrenBottomCopy = nodeBottom.children.slice(0);
+	// var isLeftBottomCopy = nodeBottom.isLeft;
+	// var bottomPCopy = {x:nodeBottom.p.x,y:nodeBottom.p.y};
+	
+	// if(nodeBottom.isLeft) {
+	// 	nodeBottom.children[0] = nodeKeyTop;
+	// 	nodeBottom.children[1] = nodeTop.children[1];
+
+	// 	if(nodeTop.children[1]) {
+	// 		graph[nodeTop.children[1]].parent = nodeKeyBottom;
+	// 	}
+
+	// } else {
+	// 	nodeBottom.children[0] = nodeTop.children[0];
+	// 	nodeBottom.children[1] = nodeKeyTop;
+
+	// 	if(nodeTop.children[0]) {
+	// 		graph[nodeTop.children[0]].parent = nodeKeyBottom;
+	// 	}
+	// }
+
+	// nodeBottom.isLeft = nodeTop.isLeft;
+	// nodeBottom.parent = nodeTop.parent;
+	// nodeBottom.level--;
+	// nodeTop.level++;
+
+	// nodeTop.isLeft = isLeftBottomCopy;
+	// nodeTop.children = childrenBottomCopy;
+	// nodeTop.parent = nodeKeyBottom;
+
+	// if(childrenBottomCopy[0]) {
+	// 	graph[childrenBottomCopy[0]].parent = nodeKeyTop;
+	// }
+
+	// if(childrenBottomCopy[1]) {
+	// 	graph[childrenBottomCopy[1]].parent = nodeKeyTop;
+	// }
+
+	// nodeBottom.p.x = nodeTop.p.x;
+	// nodeBottom.p.y = nodeTop.p.y;
+
+	// nodeTop.p.x = bottomPCopy.x;
+	// nodeTop.p.y = bottomPCopy.y;
+};
+
+GRA.bubbleUp = function(nodeKey) {
+	var node = GRA.graph[nodeKey];
+
+	if(node.parent) {
+		var parent = GRA.graph[node.parent];
+		if(parent.v < node.v) {
+
+			GRA.swapNodes(node.parent, nodeKey);
+			GRA.bubbleUp(node.parent);
+		}
+	}
+};
+
 GRA.insertHeap = function(rootKey, nodeKey, level) {
 
 	var root = GRA.graph[rootKey];
 	var node = GRA.graph[nodeKey];
+	console.log(root.v.toString())
 
 	var searchQueue = [rootKey];
 	var numSearched = 0;
@@ -74,6 +151,7 @@ GRA.insertHeap = function(rootKey, nodeKey, level) {
 			node.parent = nodeSearchKey;
 			node.isLeft = true;
 
+			GRA.bubbleUp(nodeKey);
 			return;
 		}
 
@@ -85,6 +163,7 @@ GRA.insertHeap = function(rootKey, nodeKey, level) {
 			node.parent = nodeSearchKey;
 			node.isLeft = false;
 
+			GRA.bubbleUp(nodeKey);
 			return;
 		}
 
