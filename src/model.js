@@ -1,5 +1,6 @@
 GRA.updateModel = function(dt) {
 	
+	
 	if(!GRA.rootKey) {
 		var node = {children: [], p: {x:0.5,y:0}, v: Math.random(), level: 0};
 		var nodeKey = ""+Math.random();
