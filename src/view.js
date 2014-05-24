@@ -98,6 +98,11 @@ GRA.viewGraph = function() {
 			ctx.fillStyle = 'rgba(127,127,127,0.5)';
 		}
 
+
+		if(node.visited) {
+			ctx.fillStyle = 'rgba(255,0,255,1)';
+		}
+
 		var x = ((node.p.x - b.x) / b.w) * w;
 		var y = ((node.p.y - b.y) / b.h) * h;
 

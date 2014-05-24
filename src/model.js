@@ -1,23 +1,56 @@
 GRA.updateModel = function(dt) {
 	
-	var node = {children: [], p: {x:0.5,y:0}, v: Math.random(), level: 0};
-
-	var nodeKey = ""+Math.random();
-	GRA.graph[nodeKey] = node;
-
 	if(!GRA.rootKey) {
+		var node = {children: [], p: {x:0.5,y:0}, v: Math.random(), level: 0};
+		var nodeKey = ""+Math.random();
+		GRA.graph[nodeKey] = node;
 		GRA.rootKey = nodeKey;
-		GRA.numNodes = 1;
+		GRA.genRandomNodes(50);
+		GRA.genRandomEdges(1.1);
 	} else {
 
+		GRA.setAllUnvisited();
+		GRA.bfs(GRA.selectedNode);
 		// GRA.insertBinTree(GRA.rootKey, nodeKey, 1);
-		GRA.numNodes++;
-		GRA.insertHeap(GRA.rootKey, nodeKey, 0, 0);
+		// GRA.insertHeap(GRA.rootKey, nodeKey, 0, 0);
 	}
 
 	
 	GRA.dirtyCanvas = true;
 };
+
+GRA.setAllUnvisited = function() {
+
+	for(var k in GRA.graph) {
+		var node = GRA.graph[k];
+		node.visited = false;
+	}
+}
+
+GRA.bfs = function(nodeKey) {
+	if(!GRA.graph[nodeKey]) {return;}
+
+	var searchQueue = [nodeKey];
+	var numSearched = 0;
+
+	while(searchQueue.length - numSearched > 0) {
+		var nodeSearchKey = searchQueue[numSearched];
+		var nodeSearch = GRA.graph[nodeSearchKey];
+		numSearched++;
+
+		if(!nodeSearch) {continue;}
+
+		if(!nodeSearch.visited) {
+			for(var i = 0; i < nodeSearch.children.length; i++) {
+				searchQueue.push(nodeSearch.children[i]);
+			}
+		}
+
+
+		nodeSearch.visited = true;
+	}
+
+}
 
 GRA.insertBinTree = function(rootKey, nodeKey, level) {
 
@@ -130,7 +163,7 @@ GRA.insertHeap = function(rootKey, nodeKey, level) {
 
 	var root = GRA.graph[rootKey];
 	var node = GRA.graph[nodeKey];
-	console.log(root.v.toString())
+	// console.log(root.v.toString())
 
 	var searchQueue = [rootKey];
 	var numSearched = 0;
@@ -213,7 +246,7 @@ GRA.genRandomNodes = function(n) {
 	var graph = GRA.graph;
 
 	for(var i = 0; i < n; i++) {
-		graph['somerandomKey'+i] = {children: [], p: {x:Math.random(), y:Math.random()}};
+		graph['somerandomKey'+i] = {children: [], v: (Math.random()+0.5), p: {x:Math.random(), y:Math.random()}};
 	}
 
 	GRA.graph = graph;
