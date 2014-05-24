@@ -100,7 +100,8 @@ GRA.viewGraph = function() {
 
 
 		if(node.visited) {
-			ctx.fillStyle = 'rgba(255,0,255,1)';
+			var colorLevel = Math.floor(255/(1+node.level));
+			ctx.fillStyle = 'rgba('+colorLevel+',0,'+colorLevel+',1)';
 		}
 
 		var x = ((node.p.x - b.x) / b.w) * w;

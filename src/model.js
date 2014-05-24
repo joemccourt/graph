@@ -32,10 +32,12 @@ GRA.bfs = function(nodeKey) {
 	if(!GRA.graph[nodeKey]) {return;}
 
 	var searchQueue = [nodeKey];
+	var levels = [0];
 	var numSearched = 0;
 
 	while(searchQueue.length - numSearched > 0) {
 		var nodeSearchKey = searchQueue[numSearched];
+		var level = levels[numSearched];
 		var nodeSearch = GRA.graph[nodeSearchKey];
 		numSearched++;
 
@@ -44,11 +46,13 @@ GRA.bfs = function(nodeKey) {
 		if(!nodeSearch.visited) {
 			for(var i = 0; i < nodeSearch.children.length; i++) {
 				searchQueue.push(nodeSearch.children[i]);
+				levels.push(level+1);
 			}
+			nodeSearch.visited = true;
+			nodeSearch.level = level;
 		}
 
 
-		nodeSearch.visited = true;
 	}
 
 }
