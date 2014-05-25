@@ -31,6 +31,10 @@ GRA.viewGraph = function() {
 	var h = GRA.canvas.height;
 	var b = GRA.gameBox;
 
+	ctx.font = 0.02*(w+h)/2 + "px Lucida Console";
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+
 	var selectedChildren = [];
 	var hoverChildren = [];
 	if(GRA.graph[GRA.selectedNode]) {
@@ -98,14 +102,10 @@ GRA.viewGraph = function() {
 			ctx.fillStyle = 'rgba(127,127,127,0.5)';
 		}
 
-
-		if(node.visited) {
-			var colorLevel = Math.floor(255/(1+node.level));
-			ctx.fillStyle = 'rgba('+colorLevel+',0,'+colorLevel+',1)';
-		}
-
 		var x = ((node.p.x - b.x) / b.w) * w;
 		var y = ((node.p.y - b.y) / b.h) * h;
+
+
 
 		ctx.beginPath();
 		
@@ -114,6 +114,11 @@ GRA.viewGraph = function() {
 		ctx.closePath();
 
 		ctx.fill();
+
+		if(node.visited) {
+			ctx.fillStyle = 'black';
+			ctx.fillText(node.level,x,y);
+		}
 	}
 
 	ctx.restore();

@@ -11,7 +11,7 @@ GRA.updateModel = function(dt) {
 	} else {
 
 		GRA.setAllUnvisited();
-		GRA.bfs(GRA.selectedNode);
+		GRA.dfs(GRA.selectedNode, 0);
 		// GRA.insertBinTree(GRA.rootKey, nodeKey, 1);
 		// GRA.insertHeap(GRA.rootKey, nodeKey, 0, 0);
 	}
@@ -27,6 +27,20 @@ GRA.setAllUnvisited = function() {
 		node.visited = false;
 	}
 }
+
+GRA.dfs = function(nodeKey, level) {
+	var node = GRA.graph[nodeKey];
+	if(!node) {return;}
+
+	if(!node.visited) {
+		node.visited = true;
+		node.level = level;
+		
+		for(var i = 0; i < node.children.length; i++) {
+			GRA.dfs(node.children[i], level+1);
+		}
+	}
+};
 
 GRA.bfs = function(nodeKey) {
 	if(!GRA.graph[nodeKey]) {return;}
