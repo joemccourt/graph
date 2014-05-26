@@ -20,8 +20,8 @@ GRA.initDefaultValues = function() {
 
 	GRA.gameState = {};
 
-	GRA.selectedNode = "somerandomKey0";
-	GRA.hoverNode = "somerandomKey1";
+	GRA.selectedNode = "";
+	GRA.hoverNode = "";
 
 	GRA.time = 0;
 };
@@ -55,10 +55,10 @@ GRA.gameLoop = function(time) {
 
 	GRA.frameRenderTime = time - GRA.lastFrameTime;
 	
-	if(time - GRA.lastUpdateTime > 200) {
+	// if(time - GRA.lastUpdateTime > 200) {
 		GRA.updateModel();
 		GRA.lastUpdateTime = time;
-	}
+	// }
 
 	if(GRA.dirtyCanvas) {
 		GRA.drawClear();

@@ -6,12 +6,15 @@ GRA.updateModel = function(dt) {
 		var nodeKey = ""+Math.random();
 		GRA.graph[nodeKey] = node;
 		GRA.rootKey = nodeKey;
-		GRA.genRandomNodes(50);
-		GRA.genRandomEdges(1.1);
+		GRA.genRandomNodes(20);
+		GRA.genRandomEdges(4.1);
 	} else {
 
-		GRA.setAllUnvisited();
-		GRA.dfs(GRA.selectedNode, 0);
+
+		if(GRA.dirtyCanvas) {
+			GRA.setAllUnvisited();
+			GRA.bfs(GRA.hoverNode, 0);
+		}
 		// GRA.insertBinTree(GRA.rootKey, nodeKey, 1);
 		// GRA.insertHeap(GRA.rootKey, nodeKey, 0, 0);
 	}

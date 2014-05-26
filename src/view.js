@@ -106,7 +106,6 @@ GRA.viewGraph = function() {
 		var y = ((node.p.y - b.y) / b.h) * h;
 
 
-
 		ctx.beginPath();
 		
 		ctx.beginPath();
