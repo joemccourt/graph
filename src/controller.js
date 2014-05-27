@@ -202,6 +202,9 @@ GRA.mousedown = function(x,y) {
 	var node = GRA.graph[GRA.selectedNode];
 	
 	if(node) {
+		GRA.searchNodes();
+		GRA.organizeByLevel();
+
 		var p = node.p;
 		GRA.selectedNodeP0 = {x: p.x, y: p.y};
 		GRA.dirtyCanvas = true;

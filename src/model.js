@@ -1,15 +1,19 @@
 GRA.updateModel = function(dt) {
 	
+	GRA.searchNodes();
 	
+	GRA.dirtyCanvas = true;
+};
+
+GRA.searchNodes = function() {
 	if(!GRA.rootKey) {
 		var node = {children: [], p: {x:0.5,y:0}, v: Math.random(), level: 0};
 		var nodeKey = ""+Math.random();
 		GRA.graph[nodeKey] = node;
 		GRA.rootKey = nodeKey;
-		GRA.genRandomNodes(20);
-		GRA.genRandomEdges(4.1);
+		GRA.genRandomNodes(50);
+		GRA.genRandomEdges(2.1);
 	} else {
-
 
 		if(GRA.dirtyCanvas) {
 			GRA.setAllUnvisited();
@@ -18,16 +22,70 @@ GRA.updateModel = function(dt) {
 		// GRA.insertBinTree(GRA.rootKey, nodeKey, 1);
 		// GRA.insertHeap(GRA.rootKey, nodeKey, 0, 0);
 	}
-
-	
-	GRA.dirtyCanvas = true;
 };
 
-GRA.setAllUnvisited = function() {
+GRA.getLevelInfo = function() {
+	var levels = [];
+	for(var k in GRA.graph) {
+		var node = GRA.graph[k];
+
+		if(node.level) {
+			if(!levels[node.level]) {
+				levels[node.level] = 0;
+			}
+
+			levels[node.level]++;
+		}
+	}
+
+	return levels;
+};
+
+GRA.organizeByLevel = function() {
+	var levelInfo = GRA.getLevelInfo();
+	var levelCounts = [];
+
+
+	for(var i = 0; i < levelInfo.length; i++) {
+		levelCounts[i] = 0;
+	}
+
+	var dy = 1/Math.max(2,levelInfo.length);
+	var jitter = dy*0.15;
 
 	for(var k in GRA.graph) {
 		var node = GRA.graph[k];
+
+		var x, y;
+		y = node.level * dy + Math.random() * jitter;
+
+		if(node.level) {
+			var levelCount = levelCounts[node.level];
+			var numInLevel = levelInfo[node.level];
+			if(numInLevel == 1) {
+				x = 0.5;
+			} else {
+				x = (levelCount + (numInLevel%2==1?0:0)) / (numInLevel-1);
+			}
+			levelCounts[node.level]++;
+		} else if(node.level === 0) {
+			x = 0.5;
+		} else {
+			x = node.p.x;//Math.random();
+			y = 1;//node.p.y;//Math.random();
+		}
+
+		node.p.x = x;
+		node.p.y = y;
+
+	}
+};
+
+GRA.setAllUnvisited = function() {
+	for(var k in GRA.graph) {
+		var node = GRA.graph[k];
 		node.visited = false;
+		node.level = undefined;
 	}
 }
 
@@ -282,6 +340,9 @@ GRA.genRandomEdges = function(density) {
 		keyArray.push(key);
 	}
 
+	var bidirectional = true;
+	if(bidirectional) {density /= 2;}
+
 	var numNodes = keyArray.length;
 	var numEdges = Math.round(density * numNodes);
 
@@ -297,6 +358,10 @@ GRA.genRandomEdges = function(density) {
 		}
 
 		graph[keyArray[randKeyIndex1]].children.push(keyArray[randKeyIndex2]);
+
+		if(bidirectional) {
+			graph[keyArray[randKeyIndex2]].children.push(keyArray[randKeyIndex1]);
+		}
 	}
 };
 
