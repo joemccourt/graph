@@ -45,6 +45,7 @@ GRA.organizeByLevel = function() {
 	var levelInfo = GRA.getLevelInfo();
 	var levelCounts = [];
 
+	var nodesByLevel = {};
 
 	for(var i = 0; i < levelInfo.length; i++) {
 		levelCounts[i] = 0;
@@ -60,6 +61,13 @@ GRA.organizeByLevel = function() {
 		y = node.level * dy + Math.random() * jitter;
 
 		if(node.level) {
+			if(!nodesByLevel[node.level]) {
+				nodesByLevel[node.level] = [];
+			}
+
+			nodesByLevel[node.level].push(node);
+
+
 			var levelCount = levelCounts[node.level];
 			var numInLevel = levelInfo[node.level];
 			if(numInLevel == 1) {
@@ -79,6 +87,38 @@ GRA.organizeByLevel = function() {
 		node.p.y = y;
 
 	}
+
+	//Rearange...
+	//Heuristic to better organize
+	for(var k in nodesByLevel) {
+		var nodes = nodesByLevel[k];
+		var expectations = [];
+		
+		for(var i = 0; i < nodes.length; i++) {
+			var node = nodes[i];
+			var xExpectation = 0;
+
+			for(var j = 0; j < node.children.length; j++) {
+				var childNode = GRA.graph[node.children[j]];
+				if(childNode.level == node.level-1) {
+					if(nodesByLevel[childNode.level]) {
+						xExpectation += nodesByLevel[childNode.level].indexOf(childNode) / nodesByLevel[childNode.level].length - 0.5;
+					}
+				}
+			}
+
+			expectations.push({index:i,value:xExpectation});
+		}
+
+		expectations.sort(function(a,b){ if(a.value < b.value) { return -1;} else { return 1;}});
+
+		// console.log(expectations);
+		for(var i = 0; i < nodes.length; i++) {
+			var node = nodes[expectations[i].index];
+			node.p.x = (i + (nodes.length%2==1?0:0)) / (nodes.length-1);
+		}
+	}
+
 };
 
 GRA.setAllUnvisited = function() {
