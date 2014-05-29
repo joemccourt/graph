@@ -1,9 +1,8 @@
 GRA.updateModel = function(dt) {
-	
 	GRA.searchNodes();
-	
 	GRA.dirtyCanvas = true;
 };
+
 
 GRA.searchNodes = function() {
 	if(!GRA.rootKey) {
