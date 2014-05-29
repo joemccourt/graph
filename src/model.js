@@ -57,27 +57,23 @@ GRA.organizeByLevel = function() {
 	for(var k in GRA.graph) {
 		var node = GRA.graph[k];
 
-		var x, y;
-		y = node.level * dy + Math.random() * jitter;
+		var x = 0.5;
+		var y = node.level * dy + Math.random() * jitter;
 
-		if(node.level) {
+		if(typeof node.level === "number") {
 			if(!nodesByLevel[node.level]) {
 				nodesByLevel[node.level] = [];
 			}
 
 			nodesByLevel[node.level].push(node);
 
-
 			var levelCount = levelCounts[node.level];
 			var numInLevel = levelInfo[node.level];
-			if(numInLevel == 1) {
-				x = 0.5;
-			} else {
+			if(numInLevel > 1) {
 				x = (levelCount + (numInLevel%2==1?0:0)) / (numInLevel-1);
 			}
+
 			levelCounts[node.level]++;
-		} else if(node.level === 0) {
-			x = 0.5;
 		} else {
 			x = node.p.x;//Math.random();
 			y = 1;//node.p.y;//Math.random();
@@ -93,32 +89,46 @@ GRA.organizeByLevel = function() {
 	for(var k in nodesByLevel) {
 		var nodes = nodesByLevel[k];
 		var expectations = [];
+
+		// console.log(k);
+		if(k == 0) {continue;}
 		
 		for(var i = 0; i < nodes.length; i++) {
 			var node = nodes[i];
+			var count = 0;
 			var xExpectation = 0;
 
 			for(var j = 0; j < node.children.length; j++) {
 				var childNode = GRA.graph[node.children[j]];
 				if(childNode.level == node.level-1) {
-					if(nodesByLevel[childNode.level]) {
-						xExpectation += nodesByLevel[childNode.level].indexOf(childNode) / nodesByLevel[childNode.level].length - 0.5;
-					}
+					// if(nodesByLevel[childNode.level]) {
+						xExpectation += nodesByLevel[childNode.level].indexOf(childNode);
+						count++;
+						// console.log("parent", nodesByLevel[childNode.level].indexOf(childNode));
+					// }
 				}
 			}
 
-			expectations.push({index:i,value:xExpectation});
+			xExpectation = xExpectation;
+
+			// console.log(node.v, k, i, xExpectation);	
+			expectations.push({index:i,value:xExpectation,node:node});
 		}
 
 		expectations.sort(function(a,b){ if(a.value < b.value) { return -1;} else { return 1;}});
 
 		// console.log(expectations);
 		for(var i = 0; i < nodes.length; i++) {
-			var node = nodes[expectations[i].index];
+			var node = expectations[i].node;
 			node.p.x = (i + (nodes.length%2==1?0:0)) / (nodes.length-1);
 		}
-	}
 
+		//reset nodesByLevel order
+		for(var i = 0; i < nodes.length; i++) {
+			nodesByLevel[k][i] = expectations[i].node;
+		}
+	}
+	// console.log(nodesByLevel)
 };
 
 GRA.setAllUnvisited = function() {
