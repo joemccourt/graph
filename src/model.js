@@ -11,8 +11,8 @@ GRA.searchNodes = function() {
 		var nodeKey = ""+Math.random();
 		GRA.graph[nodeKey] = node;
 		GRA.rootKey = nodeKey;
-		GRA.genRandomNodes(50);
-		GRA.genRandomEdges(2.1);
+		GRA.genRandomNodes(100);
+		GRA.genRandomEdges(2);
 	} else {
 
 		if(GRA.dirtyCanvas) {
@@ -52,7 +52,7 @@ GRA.organizeByLevel = function() {
 	}
 
 	var dy = 1/Math.max(2,levelInfo.length);
-	var jitter = dy*0.15;
+	var jitter = dy*0.05;
 
 	for(var k in GRA.graph) {
 		var node = GRA.graph[k];
@@ -91,7 +91,7 @@ GRA.organizeByLevel = function() {
 		var expectations = [];
 
 		// console.log(k);
-		if(k == 0) {continue;}
+		if(k == 0 || nodes.length <= 1) {continue;}
 		
 		for(var i = 0; i < nodes.length; i++) {
 			var node = nodes[i];
@@ -109,7 +109,7 @@ GRA.organizeByLevel = function() {
 				}
 			}
 
-			xExpectation = xExpectation;
+			xExpectation = xExpectation/count;
 
 			// console.log(node.v, k, i, xExpectation);	
 			expectations.push({index:i,value:xExpectation,node:node});

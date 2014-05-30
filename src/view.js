@@ -57,13 +57,13 @@ GRA.viewGraph = function() {
 			ctx.beginPath();
 		
 			if(key === GRA.selectedNode) {
-				ctx.strokeStyle = 'rgba(200,100,0,0.8)';
+				ctx.strokeStyle = 'rgba(200,100,0,0.5)';
 			} else if(key === GRA.hoverNode) {
-				ctx.strokeStyle = 'rgba(0,200,200,0.8)';
+				ctx.strokeStyle = 'rgba(0,200,200,0.5)';
 			} else if(selectedChildren.indexOf(key) >= 0) {
-				ctx.strokeStyle = 'rgba(100,50,0,0.8)';
+				ctx.strokeStyle = 'rgba(100,50,0,0.5)';
 			} else if(hoverChildren.indexOf(key) >= 0) {
-				ctx.strokeStyle = 'rgba(0,100,100,0.8)';
+				ctx.strokeStyle = 'rgba(0,100,100,0.5)';
 			} else {
 				ctx.strokeStyle = 'rgba(0,0,0,0.5)';
 			}
