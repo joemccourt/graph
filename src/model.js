@@ -3,6 +3,13 @@ GRA.updateModel = function(dt) {
 	GRA.dirtyCanvas = true;
 };
 
+GRA.getNodeKeyArray = function() {
+	var keys = [];
+	for(var k in GRA.graph) {
+		keys.push(k);
+	}
+	return keys;
+}
 
 GRA.searchNodes = function() {
 	if(!GRA.rootKey) {
@@ -44,6 +51,7 @@ GRA.organizeByLevel = function() {
 	var levelInfo = GRA.getLevelInfo();
 	var levelCounts = [];
 
+	var offset = 0;
 	var nodesByLevel = {};
 
 	for(var i = 0; i < levelInfo.length; i++) {
@@ -75,11 +83,11 @@ GRA.organizeByLevel = function() {
 			levelCounts[node.level]++;
 		} else {
 			x = node.p.x;//Math.random();
-			y = 1;//node.p.y;//Math.random();
+			y = node.p.y;//Math.random();
 		}
 
 		node.p.x = x;
-		node.p.y = y;
+		node.p.y = y+offset;
 
 	}
 
