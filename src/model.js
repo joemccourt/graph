@@ -9,7 +9,23 @@ GRA.getNodeKeyArray = function() {
 		keys.push(k);
 	}
 	return keys;
-}
+};
+
+GRA.getNextUnvisted = function() {
+	for(var k in GRA.graph) {
+		var node = GRA.graph[k];
+		if(!node.visited) {
+			return k;
+		}
+	}
+	return false;
+};
+GRA.unsetNodeLevels = function() {
+	for(var k in GRA.graph) {
+		var node = GRA.graph[k];
+		node.level = undefined;
+	}
+};
 
 GRA.searchNodes = function() {
 	if(!GRA.rootKey) {
@@ -48,10 +64,25 @@ GRA.getLevelInfo = function() {
 };
 
 GRA.organizeByLevel = function() {
+
+	var i = 0;
+	var node = GRA.hoverNode;
+	GRA.setAllUnvisited();
+	while(node) {
+		GRA.unsetNodeLevels();
+		GRA.bfs(node, 0);
+		GRA.organizeByLevelSection(i);
+		console.log(i);
+		node = GRA.getNextUnvisted();
+		i++;
+	}
+
+};
+
+GRA.organizeByLevelSection = function(offset) {
 	var levelInfo = GRA.getLevelInfo();
 	var levelCounts = [];
 
-	var offset = 0;
 	var nodesByLevel = {};
 
 	for(var i = 0; i < levelInfo.length; i++) {
