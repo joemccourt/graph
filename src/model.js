@@ -69,7 +69,7 @@ GRA.organizeByLevel = function() {
 	var node = GRA.hoverNode;
 	GRA.setAllUnvisited();
 	while(node) {
-		console.log(i,node);
+		// console.log(i,node);
 		GRA.unsetNodeLevels();
 		GRA.bfs(node, 0);
 		GRA.organizeByLevelSection(i);
