@@ -114,10 +114,10 @@ GRA.viewGraph = function() {
 
 		ctx.fill();
 
-		if(node.visited) {
+		// if(node.visited) {
 			ctx.fillStyle = 'black';
-			ctx.fillText(node.level,x,y);
-		}
+			ctx.fillText((node.v*100|0)/100,x,y);
+		// }
 	}
 
 	ctx.restore();

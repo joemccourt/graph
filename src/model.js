@@ -20,6 +20,7 @@ GRA.getNextUnvisted = function() {
 	}
 	return false;
 };
+
 GRA.unsetNodeLevels = function() {
 	for(var k in GRA.graph) {
 		var node = GRA.graph[k];
@@ -27,20 +28,72 @@ GRA.unsetNodeLevels = function() {
 	}
 };
 
+GRA.rankNodes = function(pivot) {
+	
+	function partition(nodes, left, right, pivot) {
+		while(left < right) {
+
+			while(left < right && nodes[left].v < pivot) {
+				left++;
+			}
+
+			while(left < right && nodes[right].v >= pivot) {
+				right--;
+			}
+
+			var tmpNode = nodes[left];
+			nodes[left] = nodes[right];
+			nodes[right] = tmpNode;
+		}
+
+		return left;
+	}
+
+	var nodes = [];
+	for(var k in GRA.graph) {
+		nodes.push(GRA.graph[k]);
+		// console.log("1",GRA.graph[k].v);
+	}
+
+	var left = 0;
+	var right = nodes.length-1;
+	var newLeft = partition(nodes, left, right, pivot);
+
+	// console.log(left, newLeft);
+	var jitter = 0;//0.5 * 0.03;
+	for(var i = 0; i < nodes.length; i++) {
+		// console.log("2",nodes[i].v);
+		if(i < newLeft) {
+			nodes[i].p.x = 0.25 + jitter * (Math.random()-0.5)*2;
+		} else {
+			nodes[i].p.x = 0.75 + jitter * (Math.random()-0.5)*2;
+		}
+	}
+
+};
+
+GRA.initializeGraph = function() {
+	GRA.graphInitialized = true;
+
+	GRA.genRandomNodes(40);
+};
+
 GRA.searchNodes = function() {
-	if(!GRA.rootKey) {
-		var node = {children: [], p: {x:0.5,y:0}, v: Math.random(), level: 0};
-		var nodeKey = ""+Math.random();
-		GRA.graph[nodeKey] = node;
-		GRA.rootKey = nodeKey;
-		GRA.genRandomNodes(500);
-		GRA.genRandomEdges(1);
+	if(!GRA.graphInitialized) {
+		GRA.initializeGraph();
+		// var node = {children: [], p: {x:0.5,y:0}, v: Math.random(), level: 0};
+		// var nodeKey = ""+Math.random();
+		// GRA.graph[nodeKey] = node;
+		// GRA.rootKey = nodeKey;
+		// GRA.genRandomNodes(500);
+		// GRA.genRandomEdges(1);
 	} else {
 
-		if(GRA.dirtyCanvas) {
-			GRA.setAllUnvisited();
-			GRA.bfs(GRA.hoverNode, 0);
-		}
+		// if(GRA.dirtyCanvas) {
+		// 	GRA.setAllUnvisited();
+		// 	GRA.bfs(GRA.hoverNode, 0);
+		// }
+
 		// GRA.insertBinTree(GRA.rootKey, nodeKey, 1);
 		// GRA.insertHeap(GRA.rootKey, nodeKey, 0, 0);
 	}
@@ -64,19 +117,17 @@ GRA.getLevelInfo = function() {
 };
 
 GRA.organizeByLevel = function() {
-
-	var i = 0;
+	var offset = 0;
 	var node = GRA.hoverNode;
 	GRA.setAllUnvisited();
 	while(node) {
-		// console.log(i,node);
 		GRA.unsetNodeLevels();
 		GRA.bfs(node, 0);
-		GRA.organizeByLevelSection(i);
+		GRA.organizeByLevelSection(offset);
 		node = GRA.getNextUnvisted();
-		i++;
+		
+		offset += (GRA.getLevelInfo().length+1) * 0.1;
 	}
-
 };
 
 GRA.organizeByLevelSection = function(offset) {
@@ -89,7 +140,7 @@ GRA.organizeByLevelSection = function(offset) {
 		levelCounts[i] = 0;
 	}
 
-	var dy = 1/Math.max(2,levelInfo.length);
+	var dy = 0.1;//1/Math.max(2,levelInfo.length);
 	var jitter = dy*0.05;
 
 	for(var k in GRA.graph) {
