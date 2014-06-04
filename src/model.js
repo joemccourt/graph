@@ -30,20 +30,43 @@ GRA.unsetNodeLevels = function() {
 
 GRA.rankNodes = function(pivot) {
 	
-	function partition(nodes, left, right, pivot) {
-		while(left < right) {
+	function quickSort(nodes, left, right) {
+		if(left >= right) {
+			return;
+		}
 
-			while(left < right && nodes[left].v < pivot) {
+		var newPivot = partition(nodes, left, right);
+		quickSort(nodes, left, newPivot-1);
+		quickSort(nodes, newPivot, right);
+	}
+
+	function partition(nodes, left, right) {
+		var pivotI = left + (right-left+1) * Math.random() | 0;
+		// var pivotI = Math.floor((left+right)/2);
+
+		if(pivotI <= left || pivotI >= right) {
+			// console.log(left, right, pivotI)
+		}
+		var pivot = nodes[pivotI].v;
+		// pivot = nodes[Math.floor((left+right)/2)].v;
+
+		while(left <= right) {
+
+			while(nodes[left].v < pivot) {
 				left++;
 			}
 
-			while(left < right && nodes[right].v >= pivot) {
+			while(nodes[right].v > pivot) {
 				right--;
 			}
 
-			var tmpNode = nodes[left];
-			nodes[left] = nodes[right];
-			nodes[right] = tmpNode;
+			if(left <= right) {
+				var tmpNode = nodes[left];
+				nodes[left] = nodes[right];
+				nodes[right] = tmpNode;
+				left++;
+				right--;
+			}
 		}
 
 		return left;
@@ -52,22 +75,25 @@ GRA.rankNodes = function(pivot) {
 	var nodes = [];
 	for(var k in GRA.graph) {
 		nodes.push(GRA.graph[k]);
-		// console.log("1",GRA.graph[k].v);
 	}
 
 	var left = 0;
 	var right = nodes.length-1;
-	var newLeft = partition(nodes, left, right, pivot);
+
+	quickSort(nodes, left, right);
 
 	// console.log(left, newLeft);
 	var jitter = 0;//0.5 * 0.03;
 	for(var i = 0; i < nodes.length; i++) {
 		// console.log("2",nodes[i].v);
-		if(i < newLeft) {
-			nodes[i].p.x = 0.25 + jitter * (Math.random()-0.5)*2;
-		} else {
-			nodes[i].p.x = 0.75 + jitter * (Math.random()-0.5)*2;
-		}
+
+		nodes[i].p.x = i / nodes.length;
+		nodes[i].p.y = 0.5;
+		// if(i < newLeft) {
+		// 	nodes[i].p.x = 0.25 + jitter * (Math.random()-0.5)*2;
+		// } else {
+		// 	nodes[i].p.x = 0.75 + jitter * (Math.random()-0.5)*2;
+		// }
 	}
 
 };
@@ -75,7 +101,7 @@ GRA.rankNodes = function(pivot) {
 GRA.initializeGraph = function() {
 	GRA.graphInitialized = true;
 
-	GRA.genRandomNodes(40);
+	GRA.genRandomNodes(100);
 };
 
 GRA.searchNodes = function() {
